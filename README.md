@@ -1,24 +1,36 @@
 # analize_autoassign
+Code to analize python source files to asses if it could benefit for the autoassign syntax proposed 
+in this [thread](https://mail.python.org/archives/list/python-ideas@python.org/thread/SCXHEWCHBJN3A7DPGGPPFLSTMBLLAOTX/) of the python-ideas mailing list.
 
-## Métodos
+Currently, this code allows to search for functions defined inside classes that follow this pattern:
+```python
 
-- Total de métodos con autoassign: 1099
-- Número de métodos con autoassign que *no* autoasignan todos los parámetros:  528
-  + un 48% de los métodos que hacen autoassign no asigna todos los parámetros
+class A:
+  ...
+  def some_method(s, t, v, w):
+    ...
+    s.t = t
+    s.v = v
+  ...
+```
+In this example, `some_method` is considered a function that follows the autoassign pattern, `s` is considered 
+the "self candidate", and of the three remaining parameters, only `t` and `v` could be autoassigned.
 
- - Paquetes que incluían `auto assign`, más de 95 incluyendo:
-          stdlib jupyterlab_server h5py babel pylatexenc black jupyterlab pydantic jupyter_server
-        cvxpy lmfit click debugpy ipykernel nbconvert httpx websocket mpmath asteval tqdm httpcore
-        websockets bleach pandas qiskit tweedledum sklearn markupsafe pexpect sympy ptyprocess platformdirs
-        notebook stack_data pyquil numpy attr dill testpath pbr pybind11
-       
-## Clases
-- Total de clases analizadas: 24021
-- Definen algún método:  19787
-- Definen algún método con `auto assign`:  3448
-  +  un 17% de las clases que definen algún método tienen alguno con autoassign
+## Usage:
+There are two binaries, one to inspect a single file, and get a printed report on stdout of the detected 
+functions, and the other traverse directories with installed python packages (site-package or other user selected directories),
+and collect the information 
 
-- Número de clases que son dataclass:  174
-- Número de clases que no definen métodos y son subclases:  3980
-
-
+## Caveats:
+- Only consider classes at the top of the file (nested classes are not considered.
+- Only functions defined inside a top class are considered, irrespective of the decorators 
+that they may have. In other words, a static method is analized the same as an instance method.
+- This code doesn't check that the parameter is not manipulated before being assigned. For example:
+```python
+class A:
+  def __init__(self, names):
+    names = ','.split(names)
+    self.names = names
+```
+would result in a false positive. This function is not suitable to be used with the proposed autoassign syntax, 
+but it would be counted as if it were.
