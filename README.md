@@ -42,7 +42,7 @@ that they may have. In other words, a static method is analized the same as an i
 ```python
 class A:
   def __init__(self, names):
-    names = ','.split(names)
+    names = names.split(',')
     self.names = names
 ```
 would result in a false positive. This function is not suitable to be used with the proposed autoassign syntax, 
