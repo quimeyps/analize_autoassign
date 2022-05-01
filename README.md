@@ -17,9 +17,22 @@ In this example, `some_method` is considered a function that follows the autoass
 the "self candidate", and of the three remaining parameters, only `t` and `v` could be autoassigned.
 
 ## Usage:
-There are two binaries, one to inspect a single file, and get a printed report on stdout of the detected 
-functions, and the other traverse directories with installed python packages (site-package or other user selected directories),
-and collect the information 
+There are two binaries, one to inspect a single file (`inspect_file.py`), and get a printed report on stdout of the detected 
+functions, and the other (`inspect_library.py`) traverse directories with installed python packages (site-package or other user selected directories),
+and collect the information in two pandas DataFrame (one for classes and the other for methods):
+- `python inspect_file.py <filename>`
+  + output to stdout
+- `python inspect_library.py <folder1> <folder2> ... <folderN>`
+  + output two files: `classes_data_b.pkl` and `methods_data_b.pkl` (the names are hardcoded for now).
+  + In methods dataframe, there are only entries for autoassign methods candidates, with some information regarding the number
+    of parameters that could be autoassigned, and the number of parameters that can't be autoassigned.
+  + In the classes dataframe there is information of **all** the classes, indicating the package, the file, if has a dataclass decorator, if it is a subclass, te numebr of methods that defined (again, could include static methods and others), and the numebr of methods that follow the autoassign pattern. 
+
+There is also a jupyter python notebook (`explore_stats.ipynb`), that it doesn't have that much code. It simply loads the pandas pickles, and perform 
+some simple statistic. The printed messages in the notebook are currently in spanish. 
+
+There are an example output 
+
 
 ## Caveats:
 - Only consider classes at the top of the file (nested classes are not considered.
